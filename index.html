@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🏈 Process vs Results Lab - Football Edition</title>
+  <title>Process vs Results Lab</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Nunito:wght@400;700;900&display=swap');
 
@@ -18,30 +18,51 @@
       --red: #e74c3c;
       --blue: #3498db;
       --orange: #ff9800;
+      --purple: #9c27b0;
+      /* Basketball theme colors */
+      --court-tan: #c8a265;
+      --court-dark: #8b6914;
+      --bball-orange: #ee6730;
+      --bball-orange-dark: #c94a18;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Nunito', sans-serif;
-      background: var(--green-dark);
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background 0.8s ease;
     }
 
-    /* ===== FIELD BACKGROUND ===== */
+    body.football-theme { background: var(--green-dark); }
+    body.basketball-theme { background: #3e2110; }
+
+    /* ===== FIELD BACKGROUND (Football) ===== */
     .field-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        var(--green-turf) 0px,
-        var(--green-turf) 60px,
-        var(--green-dark) 60px,
-        var(--green-dark) 120px
-      );
       z-index: 0;
       opacity: 0.4;
+      transition: all 0.8s ease;
+    }
+
+    body.football-theme .field-bg {
+      background: repeating-linear-gradient(
+        0deg,
+        var(--green-turf) 0px, var(--green-turf) 60px,
+        var(--green-dark) 60px, var(--green-dark) 120px
+      );
+      opacity: 0.4;
+    }
+
+    body.basketball-theme .field-bg {
+      background: repeating-linear-gradient(
+        0deg,
+        #b8883a 0px, #b8883a 80px,
+        #a07528 80px, #a07528 160px
+      );
+      opacity: 0.25;
     }
 
     .yard-lines {
@@ -49,13 +70,21 @@
       top: 0; left: 0; right: 0; bottom: 0;
       z-index: 0;
       opacity: 0.08;
+      transition: all 0.8s ease;
+    }
+
+    body.football-theme .yard-lines {
       background: repeating-linear-gradient(
-        0deg,
-        transparent 0px,
-        transparent 118px,
-        white 118px,
-        white 122px
+        0deg, transparent 0px, transparent 118px, white 118px, white 122px
       );
+    }
+
+    body.basketball-theme .yard-lines {
+      background:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.3;
     }
 
     /* ===== MAIN CONTAINER ===== */
@@ -66,6 +95,45 @@
       margin: 0 auto;
       padding: 20px 16px 60px;
     }
+
+    /* ===== LEVEL TABS ===== */
+    .level-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .level-tab {
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.9rem;
+      padding: 10px 24px;
+      border-radius: 30px;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: #888;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+    }
+
+    .level-tab:hover:not(:disabled) {
+      background: rgba(255,255,255,0.1);
+      color: #ccc;
+    }
+
+    .level-tab.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(255,193,7,0.1);
+    }
+
+    .level-tab:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .level-tab .lock-icon { margin-right: 4px; }
 
     /* ===== SCOREBOARD HEADER ===== */
     .scoreboard {
@@ -78,6 +146,7 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
       position: relative;
       overflow: hidden;
+      transition: border-color 0.5s ease;
     }
 
     .scoreboard::before {
@@ -88,6 +157,14 @@
       background: linear-gradient(45deg, var(--gold), transparent, var(--gold));
       z-index: -1;
       opacity: 0.3;
+    }
+
+    body.basketball-theme .scoreboard {
+      border-color: var(--bball-orange);
+    }
+
+    body.basketball-theme .scoreboard::before {
+      background: linear-gradient(45deg, var(--bball-orange), transparent, var(--bball-orange));
     }
 
     .scoreboard h1 {
@@ -110,6 +187,11 @@
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
+      transition: color 0.5s ease;
+    }
+
+    body.basketball-theme .scoreboard .subtitle {
+      color: var(--bball-orange);
     }
 
     .scoreboard .intro {
@@ -117,13 +199,39 @@
       font-size: 0.95rem;
       margin-top: 14px;
       line-height: 1.6;
-      max-width: 680px;
+      max-width: 700px;
       margin-left: auto;
       margin-right: auto;
     }
 
     .scoreboard .intro strong {
       color: var(--gold);
+    }
+
+    body.basketball-theme .scoreboard .intro strong {
+      color: var(--bball-orange);
+    }
+
+    .level-badge {
+      display: inline-block;
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .level-badge.l1 {
+      background: rgba(76,175,80,0.2);
+      color: var(--green-light);
+      border: 1px solid rgba(76,175,80,0.3);
+    }
+
+    .level-badge.l2 {
+      background: rgba(238,103,48,0.2);
+      color: var(--bball-orange);
+      border: 1px solid rgba(238,103,48,0.3);
     }
 
     /* ===== LEGEND / CHEAT SHEET ===== */
@@ -136,6 +244,11 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      transition: border-color 0.5s ease;
+    }
+
+    body.basketball-theme .legend {
+      border-color: rgba(238,103,48,0.3);
     }
 
     .legend h3 {
@@ -146,6 +259,11 @@
       margin-bottom: 4px;
       text-align: center;
       letter-spacing: 1px;
+      transition: color 0.5s ease;
+    }
+
+    body.basketball-theme .legend h3 {
+      color: var(--bball-orange);
     }
 
     .legend-item {
@@ -158,8 +276,7 @@
     }
 
     .legend-dot {
-      width: 14px;
-      height: 14px;
+      width: 14px; height: 14px;
       border-radius: 50%;
       flex-shrink: 0;
     }
@@ -200,11 +317,13 @@
       content: '';
       position: absolute;
       top: 0; left: 0;
-      width: 6px;
-      height: 100%;
-      background: var(--gold);
+      width: 6px; height: 100%;
       border-radius: 16px 0 0 16px;
+      transition: background 0.3s ease;
     }
+
+    body.football-theme .play-card::before { background: var(--gold); }
+    body.basketball-theme .play-card::before { background: var(--bball-orange); }
 
     .play-card:hover {
       transform: translateY(-2px);
@@ -212,18 +331,22 @@
       border-color: rgba(255,193,7,0.3);
     }
 
+    body.basketball-theme .play-card:hover {
+      border-color: rgba(238,103,48,0.3);
+    }
+
     .play-card.correct {
       border-color: var(--green-light) !important;
       box-shadow: 0 0 20px rgba(76,175,80,0.2);
     }
-    .play-card.correct::before { background: var(--green-light); }
+    .play-card.correct::before { background: var(--green-light) !important; }
 
     .play-card.incorrect {
       border-color: var(--red) !important;
       box-shadow: 0 0 20px rgba(231,76,60,0.2);
       animation: shake 0.5s ease;
     }
-    .play-card.incorrect::before { background: var(--red); }
+    .play-card.incorrect::before { background: var(--red) !important; }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -241,18 +364,27 @@
     }
 
     .play-number {
-      background: var(--gold);
       color: var(--dark);
       font-family: 'Russo One', sans-serif;
       font-size: 1.1rem;
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    body.football-theme .play-number {
+      background: var(--gold);
       box-shadow: 0 2px 8px rgba(255,193,7,0.3);
+    }
+
+    body.basketball-theme .play-number {
+      background: var(--bball-orange);
+      box-shadow: 0 2px 8px rgba(238,103,48,0.3);
+      color: #fff;
     }
 
     .play-label {
@@ -285,6 +417,19 @@
       font-size: 0.92rem;
     }
 
+    .play-description .hint {
+      display: block;
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.04);
+      border-left: 3px solid var(--bball-orange);
+      border-radius: 0 8px 8px 0;
+      color: #bbb;
+      font-size: 0.82rem;
+      font-style: italic;
+      line-height: 1.5;
+    }
+
     .answer-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -315,10 +460,19 @@
     }
 
     .answer-btn.selected {
+      box-shadow: 0 0 12px rgba(255,193,7,0.15);
+    }
+
+    body.football-theme .answer-btn.selected {
       background: rgba(255,193,7,0.15);
       border-color: var(--gold);
       color: var(--gold);
-      box-shadow: 0 0 12px rgba(255,193,7,0.15);
+    }
+
+    body.basketball-theme .answer-btn.selected {
+      background: rgba(238,103,48,0.15);
+      border-color: var(--bball-orange);
+      color: var(--bball-orange);
     }
 
     .answer-btn.correct-answer {
@@ -335,16 +489,14 @@
 
     .feedback-icon {
       position: absolute;
-      top: 16px;
-      right: 16px;
+      top: 16px; right: 16px;
       font-size: 1.6rem;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
+
     .play-card.correct .feedback-icon,
-    .play-card.incorrect .feedback-icon {
-      opacity: 1;
-    }
+    .play-card.incorrect .feedback-icon { opacity: 1; }
 
     /* ===== SUBMIT BUTTON ===== */
     .submit-section {
@@ -353,8 +505,6 @@
     }
 
     .submit-btn {
-      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-      color: var(--dark);
       font-family: 'Russo One', sans-serif;
       font-size: 1.3rem;
       border: none;
@@ -363,20 +513,36 @@
       cursor: pointer;
       letter-spacing: 2px;
       text-transform: uppercase;
-      box-shadow: 0 4px 20px rgba(255,193,7,0.3);
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
     }
 
+    body.football-theme .submit-btn {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: var(--dark);
+      box-shadow: 0 4px 20px rgba(255,193,7,0.3);
+    }
+
+    body.basketball-theme .submit-btn {
+      background: linear-gradient(135deg, var(--bball-orange), var(--bball-orange-dark));
+      color: var(--white);
+      box-shadow: 0 4px 20px rgba(238,103,48,0.3);
+    }
+
     .submit-btn:hover {
       transform: translateY(-3px);
+    }
+
+    body.football-theme .submit-btn:hover {
       box-shadow: 0 8px 30px rgba(255,193,7,0.4);
     }
 
-    .submit-btn:active {
-      transform: translateY(0);
+    body.basketball-theme .submit-btn:hover {
+      box-shadow: 0 8px 30px rgba(238,103,48,0.4);
     }
+
+    .submit-btn:active { transform: translateY(0); }
 
     .submit-btn:disabled {
       opacity: 0.4;
@@ -384,12 +550,12 @@
       transform: none !important;
     }
 
-    .submit-btn .football-spin {
+    .submit-btn .ball-spin {
       display: inline-block;
       transition: transform 0.5s ease;
     }
 
-    .submit-btn:hover .football-spin {
+    .submit-btn:hover .ball-spin {
       transform: rotate(360deg);
     }
 
@@ -402,9 +568,7 @@
       transition: opacity 0.4s ease;
     }
 
-    .score-display.visible {
-      opacity: 1;
-    }
+    .score-display.visible { opacity: 1; }
 
     /* ===== RESULT PANEL ===== */
     .result-panel {
@@ -416,6 +580,10 @@
       margin-top: 28px;
       display: none;
       animation: slideUp 0.5s ease;
+    }
+
+    body.basketball-theme .result-panel {
+      border-color: var(--bball-orange);
     }
 
     .result-panel.show { display: block; }
@@ -466,6 +634,37 @@
       user-select: all;
     }
 
+    body.basketball-theme .claim-code .code {
+      color: var(--bball-orange);
+    }
+
+    .next-level-btn {
+      display: inline-block;
+      margin-top: 16px;
+      background: linear-gradient(135deg, var(--bball-orange), var(--bball-orange-dark));
+      color: #fff;
+      font-family: 'Russo One', sans-serif;
+      font-size: 1rem;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 32px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 16px rgba(238,103,48,0.3);
+      transition: all 0.3s ease;
+      animation: pulse 1.5s ease infinite;
+    }
+
+    .next-level-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(238,103,48,0.5);
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 4px 16px rgba(238,103,48,0.3); }
+      50% { box-shadow: 0 4px 28px rgba(238,103,48,0.6); }
+    }
+
     .reset-btn {
       margin-top: 20px;
       background: rgba(255,255,255,0.08);
@@ -497,8 +696,7 @@
     .confetti {
       position: absolute;
       top: -20px;
-      width: 12px;
-      height: 12px;
+      width: 12px; height: 12px;
       border-radius: 2px;
       animation: confetti-fall linear forwards;
     }
@@ -508,8 +706,8 @@
       100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
     }
 
-    /* ===== FOOTBALL ANIMATIONS ===== */
-    .floating-footballs {
+    /* ===== FLOATING ITEMS ===== */
+    .floating-items {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       pointer-events: none;
@@ -517,7 +715,7 @@
       overflow: hidden;
     }
 
-    .floating-football {
+    .floating-item {
       position: absolute;
       font-size: 1.8rem;
       opacity: 0.08;
@@ -539,11 +737,18 @@
     }
 
     .progress-fill {
-      background: linear-gradient(90deg, var(--gold), var(--green-light));
       height: 100%;
       border-radius: 20px;
       width: 0%;
       transition: width 0.4s ease;
+    }
+
+    body.football-theme .progress-fill {
+      background: linear-gradient(90deg, var(--gold), var(--green-light));
+    }
+
+    body.basketball-theme .progress-fill {
+      background: linear-gradient(90deg, var(--bball-orange), var(--gold));
     }
 
     .progress-text {
@@ -551,6 +756,21 @@
       font-size: 0.8rem;
       text-align: center;
       font-weight: 700;
+    }
+
+    /* ===== LEVEL TRANSITION ===== */
+    .level-section {
+      display: none;
+    }
+
+    .level-section.active {
+      display: block;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* ===== RESPONSIVE ===== */
@@ -562,73 +782,151 @@
       .play-description { padding-left: 0; }
       .legend { grid-template-columns: 1fr; }
       .container { padding: 12px 10px 40px; }
+      .play-description .hint { margin-left: 0; }
     }
   </style>
 </head>
-<body>
+<body class="football-theme">
 
 <div class="field-bg"></div>
 <div class="yard-lines"></div>
 
-<div class="floating-footballs" id="floatingFootballs"></div>
+<div class="floating-items" id="floatingItems"></div>
 
 <div class="container">
 
-  <!-- SCOREBOARD HEADER -->
-  <div class="scoreboard">
-    <h1><span class="emoji">🏈</span> PROCESS vs RESULTS <span class="emoji">🏈</span></h1>
-    <div class="subtitle">Football Analytics Lab</div>
-    <p class="intro">
-      In football, a <strong>great decision</strong> doesn't always mean a <strong>great outcome</strong> —
-      and sometimes a <strong>bad decision</strong> gets lucky! Your job: read each play and decide if the
-      <strong>PROCESS</strong> (the decision) was good or bad, and if the <strong>RESULT</strong> (what happened) was good or bad.
-    </p>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-text" id="progressText">0 of 6 plays answered</div>
-  </div>
-
-  <!-- LEGEND -->
-  <div class="legend">
-    <h3>THE 4 CATEGORIES</h3>
-    <div class="legend-item">
-      <div class="legend-dot gpgr"></div>
-      <div class="legend-text">Good Process, Good Result <span>Smart play + it worked!</span></div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot gpbr"></div>
-      <div class="legend-text">Good Process, Bad Result <span>Smart play, but it didn't work out</span></div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot bpgr"></div>
-      <div class="legend-text">Bad Process, Good Result <span>Risky/bad play, but got lucky</span></div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot bpbr"></div>
-      <div class="legend-text">Bad Process, Bad Result <span>Risky/bad play + it failed</span></div>
-    </div>
-  </div>
-
-  <!-- PLAY CARDS -->
-  <div id="playCards"></div>
-
-  <!-- SUBMIT -->
-  <div class="submit-section">
-    <button class="submit-btn" id="submitBtn" disabled onclick="checkAnswers()">
-      <span class="football-spin">🏈</span> CHECK MY ANSWERS
+  <!-- LEVEL TABS -->
+  <div class="level-tabs">
+    <button class="level-tab active" id="tab-1" onclick="switchLevel(1)">
+      Level 1: Football
     </button>
-    <div class="score-display" id="scoreDisplay"></div>
+    <button class="level-tab" id="tab-2" onclick="switchLevel(2)" disabled>
+      <span class="lock-icon">&#128274;</span> Level 2: Basketball
+    </button>
   </div>
 
-  <!-- RESULT PANEL -->
-  <div class="result-panel" id="resultPanel">
-    <h2 id="resultTitle"></h2>
-    <p id="resultMessage"></p>
-    <div class="claim-code" id="claimCodeBox" style="display:none;">
-      <div class="label">Your Claim Code</div>
-      <div class="code" id="claimCode"></div>
+  <!-- ============================================================ -->
+  <!-- LEVEL 1: FOOTBALL                                            -->
+  <!-- ============================================================ -->
+  <div class="level-section active" id="level-1">
+
+    <div class="scoreboard">
+      <div class="level-badge l1">LEVEL 1</div>
+      <h1><span class="emoji">&#127944;</span> PROCESS vs RESULTS <span class="emoji">&#127944;</span></h1>
+      <div class="subtitle">Football Analytics Lab</div>
+      <p class="intro">
+        In football, a <strong>great decision</strong> doesn't always mean a <strong>great outcome</strong> —
+        and sometimes a <strong>bad decision</strong> gets lucky! Read each play and decide if the
+        <strong>PROCESS</strong> (the decision) was good or bad, and if the <strong>RESULT</strong> (what happened) was good or bad.
+      </p>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill-1"></div></div>
+      <div class="progress-text" id="progressText-1">0 of 6 plays answered</div>
     </div>
-    <br>
-    <button class="reset-btn" onclick="resetAll()">🔄 Try Again</button>
+
+    <div class="legend">
+      <h3>THE 4 CATEGORIES</h3>
+      <div class="legend-item">
+        <div class="legend-dot gpgr"></div>
+        <div class="legend-text">Good Process, Good Result <span>Smart play + it worked!</span></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot gpbr"></div>
+        <div class="legend-text">Good Process, Bad Result <span>Smart play, but didn't work out</span></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot bpgr"></div>
+        <div class="legend-text">Bad Process, Good Result <span>Risky/bad play, but got lucky</span></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot bpbr"></div>
+        <div class="legend-text">Bad Process, Bad Result <span>Risky/bad play + it failed</span></div>
+      </div>
+    </div>
+
+    <div id="playCards-1"></div>
+
+    <div class="submit-section">
+      <button class="submit-btn" id="submitBtn-1" disabled onclick="checkAnswers(1)">
+        <span class="ball-spin">&#127944;</span> CHECK MY ANSWERS
+      </button>
+      <div class="score-display" id="scoreDisplay-1"></div>
+    </div>
+
+    <div class="result-panel" id="resultPanel-1">
+      <h2 id="resultTitle-1"></h2>
+      <p id="resultMessage-1"></p>
+      <div class="claim-code" id="claimCodeBox-1" style="display:none;">
+        <div class="label">Level 1 Claim Code</div>
+        <div class="code" id="claimCode-1"></div>
+      </div>
+      <div id="nextLevelArea" style="display:none;">
+        <br>
+        <button class="next-level-btn" onclick="switchLevel(2)">
+          &#127936; ADVANCE TO LEVEL 2: BASKETBALL &#127936;
+        </button>
+      </div>
+      <br>
+      <button class="reset-btn" onclick="resetLevel(1)">&#128260; Try Again</button>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- LEVEL 2: BASKETBALL                                          -->
+  <!-- ============================================================ -->
+  <div class="level-section" id="level-2">
+
+    <div class="scoreboard">
+      <div class="level-badge l2">LEVEL 2 — ADVANCED</div>
+      <h1><span class="emoji">&#127936;</span> PROCESS vs RESULTS <span class="emoji">&#127936;</span></h1>
+      <div class="subtitle">Basketball Analytics Lab</div>
+      <p class="intro">
+        You passed Level 1 — now it's time to <strong>prove you REALLY get it</strong>. These basketball plays
+        are trickier. Some look good but aren't. Some look bad but are actually smart. Think carefully about
+        <strong>WHY</strong> the decision was made, not just what happened!
+      </p>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill-2"></div></div>
+      <div class="progress-text" id="progressText-2">0 of 8 plays answered</div>
+    </div>
+
+    <div class="legend">
+      <h3>REMEMBER THE 4 CATEGORIES</h3>
+      <div class="legend-item">
+        <div class="legend-dot gpgr"></div>
+        <div class="legend-text">Good Process, Good Result <span>Smart play + it worked!</span></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot gpbr"></div>
+        <div class="legend-text">Good Process, Bad Result <span>Smart play, but didn't work out</span></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot bpgr"></div>
+        <div class="legend-text">Bad Process, Good Result <span>Risky/bad play, but got lucky</span></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot bpbr"></div>
+        <div class="legend-text">Bad Process, Bad Result <span>Risky/bad play + it failed</span></div>
+      </div>
+    </div>
+
+    <div id="playCards-2"></div>
+
+    <div class="submit-section">
+      <button class="submit-btn" id="submitBtn-2" disabled onclick="checkAnswers(2)">
+        <span class="ball-spin">&#127936;</span> CHECK MY ANSWERS
+      </button>
+      <div class="score-display" id="scoreDisplay-2"></div>
+    </div>
+
+    <div class="result-panel" id="resultPanel-2">
+      <h2 id="resultTitle-2"></h2>
+      <p id="resultMessage-2"></p>
+      <div class="claim-code" id="claimCodeBox-2" style="display:none;">
+        <div class="label">Level 2 Claim Code</div>
+        <div class="code" id="claimCode-2"></div>
+      </div>
+      <br>
+      <button class="reset-btn" onclick="resetLevel(2)">&#128260; Try Again</button>
+    </div>
   </div>
 
 </div>
@@ -636,8 +934,10 @@
 <div class="confetti-container" id="confettiContainer"></div>
 
 <script>
-  // ===== PLAY DATA =====
-  const plays = [
+  // ==================================================================
+  // LEVEL 1 DATA — FOOTBALL (straightforward)
+  // ==================================================================
+  const level1Plays = [
     {
       id: 1,
       scenario: "3rd & 7 — QB reads the defense, finds the open receiver on a slant route...",
@@ -676,6 +976,68 @@
     }
   ];
 
+  // ==================================================================
+  // LEVEL 2 DATA — BASKETBALL (nuanced & tricky)
+  // ==================================================================
+  const level2Plays = [
+    {
+      id: 1,
+      scenario: "Down 2 with 5 seconds left. The point guard drives to the basket and kicks it out to the team's best 3-point shooter in the corner...",
+      detail: "The shooter is wide open, takes a clean look... and it rims out. They lose by 2.",
+      hint: "Think about it: was going for the 3 to win the game with your best shooter a smart decision, even though it missed?",
+      answer: "Good Process, Bad Result"
+    },
+    {
+      id: 2,
+      scenario: "Tied game. A player catches the ball at halfcourt with 15 seconds still on the shot clock. Instead of running a play, he launches a deep 3 immediately...",
+      detail: "Nothing but net! The bench goes crazy. They take the lead!",
+      hint: "Sure it went in... but was chucking a half-court shot with 15 seconds left actually a good decision?",
+      answer: "Bad Process, Good Result"
+    },
+    {
+      id: 3,
+      scenario: "The team runs a pick-and-roll. The defense switches. The point guard recognizes the mismatch — a tiny guard now covering their center under the basket...",
+      detail: "She lobs it to the center, who catches it, goes up strong, and scores an easy layup.",
+      hint: "Reading the mismatch and passing to the open big player... is that smart basketball?",
+      answer: "Good Process, Good Result"
+    },
+    {
+      id: 4,
+      scenario: "Up by 1, 30 seconds left. The coach says to hold the ball and make the other team foul. Instead, the guard drives into three defenders and throws up a wild scoop shot...",
+      detail: "It banks in! The crowd screams! Now they're up by 3!",
+      hint: "The coach had a smart plan. The player ignored it and got lucky. What matters more — the decision or the outcome?",
+      answer: "Bad Process, Good Result"
+    },
+    {
+      id: 5,
+      scenario: "A team is down by 1 with 8 seconds left. The coach draws up an inbound play that gets their best scorer a clean midrange jumper from her favorite spot...",
+      detail: "The play works perfectly. She's open. She shoots... and it rattles out. Game over.",
+      hint: "The play design was perfect and got the best player the best shot. Sometimes great shots just don't fall.",
+      answer: "Good Process, Bad Result"
+    },
+    {
+      id: 6,
+      scenario: "Fast break! 3-on-1. Instead of passing to either wide-open teammate, the player tries a behind-the-back, between-the-legs dunk...",
+      detail: "He loses the ball out of bounds. The other team gets it back.",
+      hint: "With two open teammates, was a trick dunk attempt the right decision?",
+      answer: "Bad Process, Bad Result"
+    },
+    {
+      id: 7,
+      scenario: "Late in the game, the team has the ball and the shot clock is running down. They swing the ball until they find an open player who takes a good mid-range shot...",
+      detail: "The ball goes in and out. No points. But the coach gives her a thumbs up.",
+      hint: "The coach wasn't upset even though it missed. Why? Think about the quality of the shot selection, not the bounce of the ball.",
+      answer: "Good Process, Bad Result"
+    },
+    {
+      id: 8,
+      scenario: "A player catches a rebound and, instead of passing to her point guard to set up the offense, she dribbles coast-to-coast through the entire defense...",
+      detail: "She gets stripped at halfcourt. The other team scores an easy layup going the other way.",
+      hint: "Trying to be a hero instead of trusting the team. How did the decision AND the result turn out?",
+      answer: "Bad Process, Bad Result"
+    }
+  ];
+
   const options = [
     "Good Process, Good Result",
     "Good Process, Bad Result",
@@ -683,20 +1045,36 @@
     "Bad Process, Bad Result"
   ];
 
-  const userAnswers = {};
+  // ==================================================================
+  // STATE
+  // ==================================================================
+  const state = {
+    1: { answers: {}, plays: level1Plays, passed: false },
+    2: { answers: {}, plays: level2Plays, passed: false }
+  };
 
-  // ===== RENDER PLAY CARDS =====
-  function renderCards() {
-    const container = document.getElementById('playCards');
+  let currentLevel = 1;
+
+  // ==================================================================
+  // RENDER
+  // ==================================================================
+  function renderCards(level) {
+    const container = document.getElementById(`playCards-${level}`);
     container.innerHTML = '';
+    const plays = state[level].plays;
+    const isL2 = level === 2;
 
     plays.forEach(play => {
       const card = document.createElement('div');
       card.className = 'play-card';
-      card.id = `card-${play.id}`;
+      card.id = `card-${level}-${play.id}`;
+
+      const hintHTML = play.hint
+        ? `<span class="hint">&#128161; <strong>Think about it:</strong> ${play.hint}</span>`
+        : '';
 
       card.innerHTML = `
-        <div class="feedback-icon" id="icon-${play.id}"></div>
+        <div class="feedback-icon" id="icon-${level}-${play.id}"></div>
         <div class="play-header">
           <div class="play-number">${play.id}</div>
           <div class="play-label">Play #${play.id}</div>
@@ -704,10 +1082,12 @@
         <div class="play-description">
           <span class="scenario">${play.scenario}</span>
           <span class="detail">${play.detail}</span>
+          ${hintHTML}
         </div>
-        <div class="answer-grid" id="answers-${play.id}">
-          ${options.map((opt, i) => `
-            <button class="answer-btn" data-play="${play.id}" data-answer="${opt}" onclick="selectAnswer(${play.id}, '${opt}', this)">
+        <div class="answer-grid" id="answers-${level}-${play.id}">
+          ${options.map(opt => `
+            <button class="answer-btn" data-play="${play.id}" data-answer="${opt}"
+                    onclick="selectAnswer(${level}, ${play.id}, '${opt}', this)">
               ${opt}
             </button>
           `).join('')}
@@ -718,125 +1098,193 @@
     });
   }
 
-  // ===== SELECT ANSWER =====
-  function selectAnswer(playId, answer, btn) {
-    userAnswers[playId] = answer;
+  // ==================================================================
+  // SELECT ANSWER
+  // ==================================================================
+  function selectAnswer(level, playId, answer, btn) {
+    state[level].answers[playId] = answer;
 
-    // Clear previous selection for this play
-    const buttons = document.querySelectorAll(`#answers-${playId} .answer-btn`);
+    const buttons = document.querySelectorAll(`#answers-${level}-${playId} .answer-btn`);
     buttons.forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
 
-    // Clear any previous correct/incorrect states
-    const card = document.getElementById(`card-${playId}`);
+    const card = document.getElementById(`card-${level}-${playId}`);
     card.classList.remove('correct', 'incorrect');
-    buttons.forEach(b => {
-      b.classList.remove('correct-answer', 'wrong-answer');
-    });
-    document.getElementById(`icon-${playId}`).textContent = '';
+    buttons.forEach(b => b.classList.remove('correct-answer', 'wrong-answer'));
+    document.getElementById(`icon-${level}-${playId}`).textContent = '';
 
-    updateProgress();
+    updateProgress(level);
   }
 
-  // ===== UPDATE PROGRESS =====
-  function updateProgress() {
-    const count = Object.keys(userAnswers).length;
-    document.getElementById('progressFill').style.width = `${(count / plays.length) * 100}%`;
-    document.getElementById('progressText').textContent = `${count} of ${plays.length} plays answered`;
-    document.getElementById('submitBtn').disabled = count < plays.length;
+  // ==================================================================
+  // UPDATE PROGRESS
+  // ==================================================================
+  function updateProgress(level) {
+    const count = Object.keys(state[level].answers).length;
+    const total = state[level].plays.length;
+    document.getElementById(`progressFill-${level}`).style.width = `${(count / total) * 100}%`;
+    document.getElementById(`progressText-${level}`).textContent = `${count} of ${total} plays answered`;
+    document.getElementById(`submitBtn-${level}`).disabled = count < total;
   }
 
-  // ===== CHECK ANSWERS =====
-  function checkAnswers() {
+  // ==================================================================
+  // CHECK ANSWERS
+  // ==================================================================
+  function checkAnswers(level) {
     let correct = 0;
+    const plays = state[level].plays;
+    const answers = state[level].answers;
 
     plays.forEach(play => {
-      const card = document.getElementById(`card-${play.id}`);
-      const icon = document.getElementById(`icon-${play.id}`);
-      const isCorrect = userAnswers[play.id] === play.answer;
+      const card = document.getElementById(`card-${level}-${play.id}`);
+      const icon = document.getElementById(`icon-${level}-${play.id}`);
+      const isCorrect = answers[play.id] === play.answer;
 
       card.classList.remove('correct', 'incorrect');
 
       if (isCorrect) {
         correct++;
         card.classList.add('correct');
-        icon.textContent = '✅';
+        icon.textContent = '\u2705';
       } else {
         card.classList.add('incorrect');
-        icon.textContent = '❌';
+        icon.textContent = '\u274C';
 
-        // Highlight correct answer
-        const buttons = document.querySelectorAll(`#answers-${play.id} .answer-btn`);
+        const buttons = document.querySelectorAll(`#answers-${level}-${play.id} .answer-btn`);
         buttons.forEach(b => {
-          if (b.dataset.answer === play.answer) {
-            b.classList.add('correct-answer');
-          }
-          if (b.dataset.answer === userAnswers[play.id] && !isCorrect) {
-            b.classList.add('wrong-answer');
-          }
+          if (b.dataset.answer === play.answer) b.classList.add('correct-answer');
+          if (b.dataset.answer === answers[play.id]) b.classList.add('wrong-answer');
         });
       }
     });
 
-    // Show score
-    const scoreDisplay = document.getElementById('scoreDisplay');
+    const scoreDisplay = document.getElementById(`scoreDisplay-${level}`);
     scoreDisplay.textContent = `Score: ${correct} / ${plays.length}`;
     scoreDisplay.classList.add('visible');
 
-    // Show result panel
-    const panel = document.getElementById('resultPanel');
-    const title = document.getElementById('resultTitle');
-    const msg = document.getElementById('resultMessage');
-    const codeBox = document.getElementById('claimCodeBox');
+    const panel = document.getElementById(`resultPanel-${level}`);
+    const title = document.getElementById(`resultTitle-${level}`);
+    const msg = document.getElementById(`resultMessage-${level}`);
+    const codeBox = document.getElementById(`claimCodeBox-${level}`);
 
     panel.classList.remove('pass', 'fail');
 
     if (correct === plays.length) {
       panel.classList.add('pass');
-      title.textContent = '🏆 TOUCHDOWN! PERFECT SCORE! 🏆';
-      msg.textContent = 'You nailed every single play! You really understand Process vs Results!';
-      codeBox.style.display = 'inline-block';
-      document.getElementById('claimCode').textContent = 'M3-L3-101-ANALYTICS';
-      launchConfetti();
+      state[level].passed = true;
+
+      if (level === 1) {
+        title.textContent = '\uD83C\uDFC6 TOUCHDOWN! PERFECT SCORE! \uD83C\uDFC6';
+        msg.textContent = 'You understand Process vs Results! But can you handle the ADVANCED level?';
+        codeBox.style.display = 'inline-block';
+        document.getElementById('claimCode-1').textContent = 'M3-L3-101-ANALYTICS';
+        document.getElementById('nextLevelArea').style.display = 'block';
+        unlockLevel2();
+        launchConfetti();
+      } else {
+        title.textContent = '\uD83C\uDFC6 SWISH! PERFECT SCORE! \uD83C\uDFC6';
+        msg.textContent = 'You don\'t just GET it — you REALLY get it. You can see past the noise and focus on decision quality. That\'s elite-level thinking!';
+        codeBox.style.display = 'inline-block';
+        document.getElementById('claimCode-2').textContent = 'M3-L3-201-ELITE';
+        launchConfetti();
+      }
     } else {
       panel.classList.add('fail');
-      title.textContent = `🏈 ${correct}/${plays.length} — Not quite!`;
-      msg.textContent = "Look at the highlighted correct answers above, then give it another shot. You've got this!";
+
+      if (level === 1) {
+        title.textContent = `\uD83C\uDFC8 ${correct}/${plays.length} \u2014 Not quite!`;
+        msg.textContent = "Look at the highlighted correct answers above, then give it another shot. You've got this!";
+      } else {
+        title.textContent = `\uD83C\uDFC0 ${correct}/${plays.length} \u2014 So close!`;
+        msg.textContent = "These are tricky on purpose! Re-read the hints, think about the DECISION not the OUTCOME, and try again.";
+      }
       codeBox.style.display = 'none';
+      if (level === 1) document.getElementById('nextLevelArea').style.display = 'none';
     }
 
     panel.classList.add('show');
     panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  // ===== RESET =====
-  function resetAll() {
-    Object.keys(userAnswers).forEach(k => delete userAnswers[k]);
+  // ==================================================================
+  // RESET
+  // ==================================================================
+  function resetLevel(level) {
+    const plays = state[level].plays;
+    state[level].answers = {};
 
     plays.forEach(play => {
-      const card = document.getElementById(`card-${play.id}`);
+      const card = document.getElementById(`card-${level}-${play.id}`);
       card.classList.remove('correct', 'incorrect');
-      document.getElementById(`icon-${play.id}`).textContent = '';
+      document.getElementById(`icon-${level}-${play.id}`).textContent = '';
 
-      const buttons = document.querySelectorAll(`#answers-${play.id} .answer-btn`);
-      buttons.forEach(b => {
-        b.classList.remove('selected', 'correct-answer', 'wrong-answer');
-      });
+      const buttons = document.querySelectorAll(`#answers-${level}-${play.id} .answer-btn`);
+      buttons.forEach(b => b.classList.remove('selected', 'correct-answer', 'wrong-answer'));
     });
 
-    document.getElementById('resultPanel').classList.remove('show');
-    document.getElementById('scoreDisplay').classList.remove('visible');
-    updateProgress();
+    document.getElementById(`resultPanel-${level}`).classList.remove('show');
+    document.getElementById(`scoreDisplay-${level}`).classList.remove('visible');
+    updateProgress(level);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ===== CONFETTI =====
+  // ==================================================================
+  // LEVEL SWITCHING
+  // ==================================================================
+  function unlockLevel2() {
+    const tab2 = document.getElementById('tab-2');
+    tab2.disabled = false;
+    tab2.innerHTML = '\uD83C\uDFC0 Level 2: Basketball';
+  }
+
+  function switchLevel(level) {
+    if (level === 2 && !state[1].passed) return;
+
+    currentLevel = level;
+
+    document.querySelectorAll('.level-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`level-${level}`).classList.add('active');
+
+    document.querySelectorAll('.level-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-${level}`).classList.add('active');
+
+    const body = document.body;
+    body.classList.remove('football-theme', 'basketball-theme');
+    body.classList.add(level === 1 ? 'football-theme' : 'basketball-theme');
+
+    updateFloatingItems(level);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ==================================================================
+  // FLOATING ITEMS
+  // ==================================================================
+  function updateFloatingItems(level) {
+    const container = document.getElementById('floatingItems');
+    container.innerHTML = '';
+    const emoji = level === 1 ? '\uD83C\uDFC8' : '\uD83C\uDFC0';
+
+    for (let i = 0; i < 8; i++) {
+      const item = document.createElement('div');
+      item.className = 'floating-item';
+      item.textContent = emoji;
+      item.style.left = Math.random() * 100 + '%';
+      item.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+      item.style.animationDuration = (Math.random() * 20 + 15) + 's';
+      item.style.animationDelay = (Math.random() * 10) + 's';
+      container.appendChild(item);
+    }
+  }
+
+  // ==================================================================
+  // CONFETTI
+  // ==================================================================
   function launchConfetti() {
     const container = document.getElementById('confettiContainer');
     container.innerHTML = '';
     const colors = ['#ffc107', '#4caf50', '#e74c3c', '#3498db', '#ff9800', '#9c27b0', '#fff'];
 
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 150; i++) {
       const piece = document.createElement('div');
       piece.className = 'confetti';
       piece.style.left = Math.random() * 100 + '%';
@@ -852,24 +1300,12 @@
     setTimeout(() => { container.innerHTML = ''; }, 5000);
   }
 
-  // ===== FLOATING FOOTBALLS =====
-  function spawnFloatingFootballs() {
-    const container = document.getElementById('floatingFootballs');
-    for (let i = 0; i < 8; i++) {
-      const fb = document.createElement('div');
-      fb.className = 'floating-football';
-      fb.textContent = '🏈';
-      fb.style.left = Math.random() * 100 + '%';
-      fb.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
-      fb.style.animationDuration = (Math.random() * 20 + 15) + 's';
-      fb.style.animationDelay = (Math.random() * 10) + 's';
-      container.appendChild(fb);
-    }
-  }
-
-  // ===== INIT =====
-  renderCards();
-  spawnFloatingFootballs();
+  // ==================================================================
+  // INIT
+  // ==================================================================
+  renderCards(1);
+  renderCards(2);
+  updateFloatingItems(1);
 </script>
 
 </body>
